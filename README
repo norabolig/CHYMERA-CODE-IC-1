@@ -1,0 +1,61 @@
+o These files are used for setting up one type of initial conditions for CHYMERA simualtions.
+The files include a restart file, header files, Makefile definitions, and the readin file
+fort.5. 
+
+o The file has a 0.5 Msun star with a 0.07 Msun disk.  The disk extent is about 50 AU.  
+The restart file arrays have dimensions JMAX,KMAX,LMAX=512,64,256.
+
+
+o Using these ICs -- as from the main CHYMERA-CODE-PROJECT README.
+
+      * Simulation ICs are available for users through github. For your first run, consider the ICs in
+        CHYMERA-CODE-IC-1. Do the following, assuming PWD=$CHYMERA_HOME, where CHYMERA_HOME is the directory 
+        where you can see bin, run, radhydro, etc. I'm also assuming the CHYMERA-CODE-IC-1 is available in 
+        the $HOME directory, but this can be anywhere of the user's choosing.
+          1). Copy $HOME/CHYMERA-CODE-IC-1/ic.dat to run/fort.7
+          2). Copy $HOME/CHYMERA-CODE-IC-1/fort.5 to run/.
+          3). Copy $HOME/CHYMERA-CODE-IC-1/units.h to headers/.
+             -> Note that placing header files in the patch directory will not work at the moment. I'm
+                aware fo the issue and working on it.
+          4). Copy $HOME/CHYMERA-CODE-IC-1/hydroparam.h to headers/.
+          5). Copy $HOME/CHYMERA-CODE-IC-1/Makefile.DEFS to bin/.
+          6). cd bin
+          7). make
+             -> The code fort.7 file is binary, little endian.  If you have a big endian machine, before
+                running the code type
+                
+                  export GFORTRAN_CONVERT_UNIT="little_endian"
+
+                for bash.  
+
+             -> If you are using a compiler other than gcc, adjustments will need to be made.
+
+          8). cd ../run
+          9). ./chymera-omp
+          10). When finished, you will have files to analyze.
+          11). cd ../analyze
+          12). Make sure sigplot and midplot have been compiled.
+          13). ./midplot 10 11 10 512 64 256 0.159 0.167 0.167 3. 1. ../run/temperat3d. tk_
+          14). ./sigplot 10 11 10 512 64 256 0.159 0.167 0.167 -18. 8.9e6 ../run/rho3d. sig_ 
+          15). python makeimage.py
+          16). xv png/sig_000010.png
+          17). Make edits in makeimage.py to analyze temperature next, and look at the tk image
+               along with time sig image.
+
+      * A few notes on image files:
+          1). rslts.* contain lots of output regarding the simulation. It is in ascii format.
+          2). gamma1.* contain the adiabatic index. This is only needed for variable gamma sims.
+          3). coolheat_full.* big file containing output regarding heating terms and optical depths
+          4). saved.* restart files.  
+          5). massflow.* files tracking mass flow on and off the grid, as well as accretion onto a
+              central object if used.
+          6). rho3d.* volume density output
+          7). temperat3d.* temperature output
+          8). There are other files.  Some are uesful, others are not.  I am trying to clean this up.
+
+      * Known issues
+          1). Mind the stack size limits.  If the code has an immediate segfault, the stack size might
+              be too small.  Increase using the commands "ulimit" in bash and "limit" in (t)csh. 
+
+Contact me if you have questions.
+
